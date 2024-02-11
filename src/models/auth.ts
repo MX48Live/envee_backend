@@ -43,18 +43,18 @@ export const Auth = {
       const JWT_SECRET = process.env.JWT_TOKEN as string;
       const NEW_REFRESH_TOKEN = {
         id: user.id,
-        iat: new Date(),
-        nbf: new Date(),
-        exp: new Date(new Date().setUTCDate(new Date().getUTCDate() + 7)), //7 Days
+        iat: Math.floor(Date.now() / 1000), // Now in seconds
+        nbf: Math.floor(Date.now() / 1000), // Now in seconds
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 Days in seconds
       };
       const refresh_token = await sign(NEW_REFRESH_TOKEN, JWT_SECRET);
 
       // create new access token
       const NEW_ACCESS_TOKEN = {
         id: user.id,
-        iat: new Date(),
-        nbf: new Date(),
-        exp: new Date(new Date().setUTCHours(new Date().getUTCHours() + 2)), //2 Hours
+        iat: Math.floor(Date.now() / 1000), // Now in seconds
+        nbf: Math.floor(Date.now() / 1000), // Now in seconds
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2, // 2 Hours in seconds
       };
       const access_token = await sign(NEW_ACCESS_TOKEN, JWT_SECRET);
 
@@ -133,9 +133,9 @@ export const Auth = {
       // Set Cookie also return session
       const NEW_ACCESS_TK = {
         id: userInfo.id,
-        iat: new Date(),
-        nbf: new Date(),
-        exp: new Date(new Date().setUTCHours(new Date().getUTCHours() + 2)), //2 Hours
+        iat: Math.floor(Date.now() / 1000), // Now in seconds
+        nbf: Math.floor(Date.now() / 1000), // Now in seconds
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2, // 2 Hours in seconds
       };
       const access_token = await sign(NEW_ACCESS_TK, SECRET);
       const response = {

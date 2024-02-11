@@ -102,6 +102,4 @@ app.get("/session", async (context) => {
   }
 });
 
-// Todo new session
-
 export default app;

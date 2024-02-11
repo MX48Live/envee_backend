@@ -4,4 +4,5 @@ export const http = {
   InternalSeverError: 500,
   Unauthorized: 401,
   Ok: 200,
+  BadRequest: 400,
 };
