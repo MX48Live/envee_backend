@@ -12,7 +12,6 @@ export async function initialDatabse() {
         username TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         display_name TEXT NOT NULL,
-        role TEXT DEFAULT 'user',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -21,9 +20,9 @@ export async function initialDatabse() {
     // create Login table
     const loginTable = db.query(`
       CREATE TABLE IF NOT EXISTS login (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        login_time TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        user_id INTEGER PRIMARY KEY,
+        last_login TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        refresh_token TEXT NOT NULL,
         FOREIGN KEY(user_id) REFERENCES users(id)
       )
     `);

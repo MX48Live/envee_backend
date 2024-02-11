@@ -6,7 +6,6 @@ export type UserType = {
   username: string;
   password: string;
   display_name: string;
-  role: string;
   created_at: string;
 };
 
