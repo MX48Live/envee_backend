@@ -15,7 +15,6 @@ app.get("/test", async (context) => {
   const response = await validateAccessToken(context);
   if (response.status !== http.Ok) {
     context.status(http.Unauthorized);
-    writeLog({ level: "info", by: "app", message: "Error Response" });
     return context.json({
       status: http.Unauthorized,
       message: "Unauthorized",
@@ -31,7 +30,5 @@ app.get("/test", async (context) => {
 
 app.route("/auth", auth);
 app.route("/users", users);
-
-writeLog({ level: "info", by: "app", message: "Server started" });
 
 export default app;

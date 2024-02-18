@@ -3,6 +3,7 @@ import { setSignedCookie, getSignedCookie } from "hono/cookie";
 
 import { http } from "../utils/httpResponse";
 import { Auth } from "../models/auth";
+import writeLog from "../utils/logger";
 
 const app = new Hono();
 
@@ -11,6 +12,11 @@ app.post("/signin", async (context) => {
   const { username, password } = await context.req.json();
   if (!username || !password) {
     context.status(http.Unauthorized);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `${username} failed to sign-in, status: ${http.Unauthorized}`,
+    });
     return context.json({
       status: http.Unauthorized,
       message: "Invalid credential",
@@ -20,6 +26,11 @@ app.post("/signin", async (context) => {
   const result = await Auth.signin(username, password);
   if (result.status == http.Ok) {
     context.status(http.Ok);
+    writeLog({
+      level: "info",
+      by: "auth",
+      message: `${username} signed-in`,
+    });
     await setSignedCookie(
       context,
       "data",
@@ -33,7 +44,6 @@ app.post("/signin", async (context) => {
         expires: new Date(new Date().setUTCDate(new Date().getUTCDate() + 7)), // 7 days
       }
     );
-
     return context.json({
       status: http.Ok,
       data: result.data,
@@ -42,6 +52,11 @@ app.post("/signin", async (context) => {
   }
   if (result.status == http.Unauthorized) {
     context.status(http.Unauthorized);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `${username} failed to sign-in, status: ${http.Unauthorized}`,
+    });
     return context.json({
       status: http.Unauthorized,
       message: "Invalid credential",
@@ -49,6 +64,11 @@ app.post("/signin", async (context) => {
   }
   if (result.status == http.InternalSeverError) {
     context.status(http.InternalSeverError);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `${username} failed to sign-in, status: ${http.InternalSeverError}`,
+    });
     return context.json({
       status: http.InternalSeverError,
       message: "Internal server error",
@@ -64,6 +84,11 @@ app.get("/session", async (context) => {
   );
   if (!requset_cookie) {
     context.status(http.Unauthorized);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `refresh session with no cookie, status: ${http.Unauthorized}`,
+    });
     return context.json({
       status: http.Unauthorized,
       message: "Unauthorized",
@@ -72,6 +97,11 @@ app.get("/session", async (context) => {
   const cookie = JSON.parse(requset_cookie as string);
   if (!cookie.refresh_token) {
     context.status(http.Unauthorized);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `refresh session with no refresh_token, status: ${http.Unauthorized}`,
+    });
     return context.json({
       status: http.Unauthorized,
       message: "Unauthorized",
@@ -80,6 +110,12 @@ app.get("/session", async (context) => {
   const result = await Auth.getSession(cookie.refresh_token);
   if (result.status == http.Ok) {
     context.status(http.Ok);
+    writeLog({
+      level: "info",
+      by: "auth",
+      user_id: result.data?.user.id,
+      message: `refresh access token with refresh token`,
+    });
     return context.json({
       status: http.Ok,
       data: result.data,
@@ -88,6 +124,11 @@ app.get("/session", async (context) => {
   }
   if (result.status == http.Unauthorized) {
     context.status(http.Unauthorized);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `refresh session with invalid refresh token, status: ${http.Unauthorized}`,
+    });
     return context.json({
       status: http.Unauthorized,
       message: "Unauthorized",
@@ -95,6 +136,11 @@ app.get("/session", async (context) => {
   }
   if (result.status == http.InternalSeverError) {
     context.status(http.InternalSeverError);
+    writeLog({
+      level: "warn",
+      by: "auth",
+      message: `refresh session with internal server error, status: ${http.InternalSeverError}`,
+    });
     return context.json({
       status: http.InternalSeverError,
       message: "Internal server error",
