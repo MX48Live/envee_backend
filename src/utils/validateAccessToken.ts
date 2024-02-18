@@ -17,8 +17,6 @@ export async function validateAccessToken(context: Context) {
   try {
     const decodedPayload = await verify(bearerToken, JWT_SECRET);
 
-    console.log("decodedPayload", decodedPayload);
-
     if (!decodedPayload.id) {
       console.log("decode failed");
       return { status: http.Unauthorized, data: undefined };
